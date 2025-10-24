@@ -203,19 +203,6 @@ On your **Windows host**, open PowerShell and:
 
 ---
 
-## 📁 Project Structure (Optional)
-
-If you’re storing your config in a repo:
-
-```
-nixos-vm-setup/
-├── README.md
-├── configuration.nix      # Your main system config
-└── images/
-    ├── step-1.png
-    ├── step-2.png
-    └── ... (up to step-15.png)
-```
 
 ---
 
