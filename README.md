@@ -1,222 +1,429 @@
+# 🚀 NixOS Beast Mode: Minimal Sway Setup in VMware (2025 Edition)
 
+[![NixOS Flake](https://nixos.org/logo/nixos-logo.png)](https://nixos.org)  
+**Declarative tiling paradise—because who needs a DE when Sway + NixOS delivers pure, reproducible power?**  
 
-# 🐧 NixOS 25.05 Minimal Installation Guide (VMware + No Desktop + SSH)
+Fresh off a November 2025 install sesh: This guide cranks up **NixOS 25.05** in **VMware** with a **minimal base** (no bloaty GNOME/Plasma), then unleashes **Sway** for i3-style tiling on Wayland. Battle-tested on VMware Workstation 17+—think 4GB RAM, 2 cores, 50GB disk, 3D accel ON for silky graphics.  
 
-This guide walks you through installing **NixOS 25.05** (`25.05.804391.b2485d569675`) in a **VMware virtual machine** with **no desktop environment**, enabling **SSH access**, and applying a custom system configuration. Perfect for servers, headless development, or learning NixOS fundamentals.
+Total time: ~20-40 mins (install + rebuilds). SSH from your host for remote config wizardry. Locale: English (UK), TZ: America/Panama, Keyboard: GB.  
 
-> ✅ Based on real installation logs  
-> 🖥️ Virtualization: VMware  
-> 🌐 Network: Bridged or NAT (ensure host can reach VM)  
-> 🔒 Security: Strong password + SSH enabled
+> **VMware Hack:** NAT networking for easy SSH. Eject ISO post-install. Pro tip: Enable `virtualisation.vmware.guest.enable = true;` for seamless clipboard/sharing.  
 
----
+## 🛠️ Prerequisites  
+- **VM Creation:** Linux > Other 64-bit. Mount NixOS graphical ISO (25.05 stable) from [nixos.org/download](https://nixos.org/download).  
+- **Host Prep:** OpenSSH client (Windows: `Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0`).  
+- **User:** We'll placeholder as `[your-username]` (e.g., swap "erick" → your pick). Strong password: 8+ chars.  
+- **Net:** Ethernet sim in VM—ditch public WiFi for rebuilds (they chug 5-30 mins on downloads).  
 
-## 📸 Installation Screenshots Overview
+## 📦 Step 1: Boot & Installer Grind  
+1. **VM Power-On:** ISO mounted? Boot hits the menu in ~3s. Mash **Tab** for kernel tweaks if you're fancy.  
 
-This guide references **15 key screenshots** from the installation process. Placeholder image paths are included below—you can replace them with actual screenshots from your setup.
+   ![NixOS Boot Menu](screenshots/boot-menu.png)  
+   *Pick "NixOS Installer (Minimal)"—keeps it lean for Sway later.*
 
----
+2. **Calamares Magic:** Graphical installer launches. English everywhere.  
 
-## 🚀 Step-by-Step Installation
+### 1.1 Welcome  
+- Lang: **American English**.  
+- **Next** →  
 
-### Step 1: Boot the Installer  
-Select the **NixOS installer without desktop** (e.g., “NixOS Installer (Linux LTS)”).  
-> ⏱️ Auto-boots in 3 seconds.
+![Welcome Screen](screenshots/welcome.png)
 
-![Step 1](images/step-1.png)
+### 1.2 Location  
+- Region: **America** | Zone: **Panama**.  
+- Sys Lang: **English (UK)** | Numbers/Dates: British English (Panama).  
+- **Next** →  
 
----
+![Location Setup](screenshots/location.png)
 
-### Step 2: Welcome Screen  
-Click **Next** to begin the guided setup.
+### 1.3 Keyboard  
+- Layout: **English (UK)**.  
+- Test: "The quick brown fox..."—nail those £ keys.  
+- **Next** →  
 
-![Step 2](images/step-2.png)
+![Keyboard Setup](screenshots/keyboard.png)
 
----
+### 1.4 Users  
+- Username: `[your-username]`.  
+- Password: Your fortress (auto-login? Check it).  
+- Admin PW: Same or separate.  
+- **Next** →  
 
-### Step 3: Set Location  
-- **Region**: `America`  
-- **Zone**: `Panama`  
-- System language: `British English (United Kingdom)`  
-- Numbers/dates locale: `español (Panama)`
+![Users Setup](screenshots/users.png)
 
-![Step 3](images/step-3.png)
+### 1.5 Desktop  
+- **No desktop**—minimal AF, Sway incoming.  
+- **Next** →  
 
----
+![Desktop: No Desktop](screenshots/desktop-none.png)
 
-### Step 4: Configure Keyboard  
-- **Model**: `Generic 104-key PC`  
-- **Layout**: `English (UK) – Default`
+### 1.6 Unfree  
+- Check **Allow unfree software** (VMware tools, anyone?).  
+- EULA nod → **Next**.  
 
-![Step 4](images/step-4.png)
+![Unfree Software](screenshots/unfree.png)
 
----
+### 1.7 Partitions  
+- **Erase disk** (VMs are throwaways).  
+- No swap (VM overhead). Auto-part: ext4 on `/dev/sda1`.  
+- Bootloader: **MBR**.  
+- **Next** > **Install** (~5-10 mins).  
 
-### Step 5: Create User Account  
-- **Full name**: `Erick`  
-- **Username**: `erick`  
-- Set a **password ≥6 characters**  
-- ✅ **Use the same password for the administrator (root) account**
+![Partitions Erase](screenshots/partitions.png)
 
-![Step 5](images/step-5.png)
+### 1.8 Summary & Go  
+- Scan: UK locale, GB keys, [your-username], no DE, unfree OK, erase/install.  
+- **Install** → Reboot (eject ISO).  
 
----
+![Summary](screenshots/summary.png)
 
-### Step 6: Choose Desktop Environment  
-👉 **Select: “No desktop”**  
-> This installs a minimal, headless system—ideal for remote management.
+## 🔧 Step 2: Post-Boot—SSH Unlock & Rebuild  
+TTY1 login: `[your-username]` + PW.  
 
-![Step 6](images/step-6.png)
+1. **SSH Enable:**  
+   ```bash
+   sudo nano /etc/nixos/configuration.nix
+   ```  
+   Append (pre-closing `}`):  
+   ```nix
+   services.openssh.enable = true;
+   ```  
+   **Ctrl+X** > **Y** > **Enter**.  
 
----
+2. **Rebuild:**  
+   ```bash
+   sudo nixos-rebuild switch
+   ```  
+   *Brew coffee—downloads/compiles galore.*  
 
-### Step 7: Enable Unfree Software  
-✅ **Check “Allow unfree software”**  
-> Required for certain hardware (e.g., NVIDIA, some Wi-Fi chips). You agree to potential EULAs.
+![TTY Edit](screenshots/tty-edit.png)  
+![Rebuild](screenshots/rebuild.png)
 
-![Step 7](images/step-7.png)
+3. **Reboot & IP Hunt:**  
+   ```bash
+   sudo reboot now  # PW prompt
+   ip addr show     # Snag 192.168.x.x (enp0s3)
+   ```  
 
----
+![Login Prompt](screenshots/login.png)
 
-### Step 8: Select Storage Device  
-- Device: `VMware Virtual S - 100.00 GiB (/dev/sda)`  
-- ✅ **Erase disk**  
-- Filesystem: `ext4`  
-- Bootloader: **Master Boot Record (MBR) on /dev/sda**
+## 🌐 Step 3: Host SSH Assault  
+PowerShell/Terminal:  
+```bash
+ssh [your-username]@192.168.x.x
+```  
+- `yes` to fingerprint. PW in. Remote reign begins.  
 
-![Step 8](images/step-8.png)
+![SSH Connect](screenshots/ssh-connect.png)
 
----
-
-### Step 9: Review Installation Summary  
-Confirm:
-- Timezone: `America/Panama`
-- No desktop
-- Disk will be erased and formatted as ext4
-- MBR bootloader
-
-![Step 9](images/step-9.png)
-
----
-
-### Step 10: Begin Installation  
-Click **Install** and wait.  
-> ⏳ Duration depends on internet speed.
-
-![Step 10](images/step-10.png)
-
----
-
-### Step 11: First Boot – Login Prompt  
-After reboot, you’ll see a TTY login screen:  
-```
-Welcome to NixOS 25.05.804391.b2485d569675 (x86_64)
-nixos login:
-```
-
-Log in with your username (`erick`) and password.
-
-![Step 11](images/step-11.png)
-
----
-
-### Step 12: Enable SSH via `configuration.nix`  
-Edit the system config:
-
+## 🪟 Step 4: Sway Summon—Full Config Drop  
+SSH'd in:  
 ```bash
 sudo nano /etc/nixos/configuration.nix
-```
-
-Add or ensure this line is present:
+```  
+Nuke & paste this beast (imports `hardware-configuration.nix`—gen it with `sudo nixos-generate-config` if MIA):  
 
 ```nix
-services.openssh.enable = true;
-```
+{ config, pkgs, ... }:
+{
+  imports = [
+    ./hardware-configuration.nix
+  ];
+  # Bootloader
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub.useOSProber = true;
+  # Networking
+  networking.hostName = "nixos";
+  networking.networkmanager.enable = true;
+  # Locale & Timezone
+  time.timeZone = "America/Panama";
+  i18n.defaultLocale = "en_GB.UTF-8";
+  services.xserver.xkb.layout = "gb";
+  console.keyMap = "uk";
+  # User
+  users.users.[your-username] = {
+    isNormalUser = true;
+    description = "[your-username]";
+    extraGroups = [ "networkmanager" "wheel" "docker" "wireshark" ];
+    shell = pkgs.bashInteractive;
+  };
+  nixpkgs.config.allowUnfree = true;
+  # Services
+  services.openssh.enable = true;
+  services.printing.enable = false;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    pulse.enable = true;
+  };
+  services.xserver.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.displayManager.gdm.wayland = true;
+  services.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  security.polkit.enable = true;
+  hardware.graphics.enable = true;
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+  # Sway + Wayland
+  programs.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true;
+    extraPackages = with pkgs; [
+      swaylock-effects
+      swayidle
+      swaybg
+      waybar
+      wofi
+      mako
+      wl-clipboard
+      grim
+      slurp
+    ];
+  };
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  };
+  # Fonts
+  fonts.packages = with pkgs; [
+    nerd-fonts.fira-code
+    noto-fonts
+    noto-fonts-emoji
+    dejavu_fonts
+  ];
+  # System packages
+  environment.systemPackages = with pkgs; [
+    # Essentials
+    wget curl git vim tree htop unzip file which killall btop cowsay neofetch
+    # Terminal
+    foot starship zoxide fzf ripgrep fd bat eza
+    # File managers
+    nautilus gvfs ranger
+    # Development (general)
+    neovim gcc go
+    # MERN stack
+    nodejs
+    nodePackages.npm
+    nodePackages.yarn
+    mongodb
+    sqlite
+    dbeaver-bin # Reemplazo de PostgreSQL
+    # Python & Data Science
+    python3
+    python3Packages.pip
+    python3Packages.virtualenv
+    python3Packages.pandas
+    python3Packages.numpy
+    python3Packages.matplotlib
+    python3Packages.scikit-learn
+    python3Packages.jupyter
+    python3Packages.seaborn
+    R
+    # Networking & Security
+    wireshark nmap netcat-gnu tcpdump hashcat cmatrix
+    # Apps
+    firefox mpv imv zathura
+    # System monitoring
+    lm_sensors pciutils usbutils
+    # Archives
+    p7zip unrar
+    # Appearance
+    lxappearance papirus-icon-theme arc-theme
+    # Containers/DevOps
+    docker-compose kubectl
+  ];
+  programs.git.enable = true;
+  environment.variables = {
+    EDITOR = "nvim";
+    BROWSER = "firefox";
+    TERMINAL = "foot";
+  };
+  programs.firefox.enable = true;
+  programs.wireshark.enable = true;
+  system.stateVersion = "25.05";
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+}
+```  
+**Ctrl+X** > **Y** > **Enter**.  
 
-> 💡 You can paste your full custom Nix config here.
-
-Save the file:
-- `Ctrl+X` → `Y` → `Enter`
-
-![Step 12](images/step-12.png)
-
----
-
-### Step 13: Apply Configuration  
-Rebuild the system:
-
+Rebuild:  
 ```bash
-sudo nixos-rebuild switch
-```
-
-> ⏳ This may take **5–30 minutes** depending on your internet speed.  
-> 🚫 **Avoid public Wi-Fi**—this downloads and builds packages securely.
-
-![Step 13](images/step-13.png)
-
----
-
-### Step 14: Reboot the System  
-```bash
+sudo nixos-rebuild switch  # Patience, grasshopper
 sudo reboot now
-```
+```  
 
-You’ll be prompted for your password during boot if disk encryption were enabled (it isn’t in this setup).
+![Config Paste](screenshots/config-paste.png)
 
-![Step 14](images/step-14.png)
+## 🎨 Step 5: Sway Launch & Wallpaper Ritual  
+GDM greets: Pick **Sway** session > `[your-username]` + PW. Tiling glory.  
 
----
+![Sway Login](screenshots/sway-login.png)
 
-### Step 15: Connect via SSH from Windows  
-On your **Windows host**, open PowerShell and:
+1. **Wallpaper Quest:**  
+   Super (Win) + Enter → `firefox`.  
+   Hunt "beautiful Chinese art wallpaper" → DL to `~/Downloads/china.jpg` (or your fave).  
 
-1. **Find your VM’s IP** (inside the VM):
+   ![Firefox Search](screenshots/firefox-search.png)
+
+2. **Sway Config Flex:**  
    ```bash
-   ip a
-   ```
-   Look for an address like `192.168.15.143`.
+   nano ~/.config/sway/config
+   ```  
+   Paste this clean, Catppuccin-tinted monster:  
 
-2. **SSH from Windows**:
-   ```powershell
-   ssh erick@192.168.15.143
-   ```
+   ```bash
+   # Sway configuration - Clean and functional
+   set $mod Mod4
+   set $term foot
+   set $menu wofi --show drun --allow-images --insensitive
+   set $browser firefox
+   set $fm xfce.thunar
+   # Background
+   output * bg ~/Downloads/china.jpg fill
+   ### Key bindings ###
+   # Apps
+   bindsym $mod+Return exec $term
+   bindsym $mod+d exec $menu
+   bindsym $mod+Shift+f exec $browser
+   bindsym $mod+Shift+n exec $fm
+   # Dev quick launch
+   bindsym $mod+Shift+v exec neovim
+   # Exit / reload
+   bindsym $mod+Shift+q kill
+   bindsym $mod+Shift+c reload
+   bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit'
+   # Move focus
+   bindsym $mod+h focus left
+   bindsym $mod+j focus down
+   bindsym $mod+k focus up
+   bindsym $mod+l focus right
+   bindsym $mod+Left focus left
+   bindsym $mod+Down focus down
+   bindsym $mod+Up focus up
+   bindsym $mod+Right focus right
+   # Move windows
+   bindsym $mod+Shift+h move left
+   bindsym $mod+Shift+j move down
+   bindsym $mod+Shift+k move up
+   bindsym $mod+Shift+l move right
+   bindsym $mod+Shift+Left move left
+   bindsym $mod+Shift+Down move down
+   bindsym $mod+Shift+Up move up
+   bindsym $mod+Shift+Right move right
+   # Workspaces
+   set $ws1 "1:term"
+   set $ws2 "2:web"
+   set $ws3 "3:code"
+   set $ws4 "4:files"
+   set $ws5 "5:db"
+   set $ws6 "6:media"
+   set $ws7 "7:net"
+   set $ws8 "8:other"
+   bindsym $mod+1 workspace $ws1
+   bindsym $mod+2 workspace $ws2
+   bindsym $mod+3 workspace $ws3
+   bindsym $mod+4 workspace $ws4
+   bindsym $mod+5 workspace $ws5
+   bindsym $mod+6 workspace $ws6
+   bindsym $mod+7 workspace $ws7
+   bindsym $mod+8 workspace $ws8
+   bindsym $mod+9 workspace number 9
+   bindsym $mod+0 workspace number 10
+   # Move containers to workspaces
+   bindsym $mod+Shift+1 move container to workspace $ws1
+   bindsym $mod+Shift+2 move container to workspace $ws2
+   bindsym $mod+Shift+3 move container to workspace $ws3
+   bindsym $mod+Shift+4 move container to workspace $ws4
+   bindsym $mod+Shift+5 move container to workspace $ws5
+   bindsym $mod+Shift+6 move container to workspace $ws6
+   bindsym $mod+Shift+7 move container to workspace $ws7
+   bindsym $mod+Shift+8 move container to workspace $ws8
+   bindsym $mod+Shift+9 move container to workspace number 9
+   bindsym $mod+Shift+0 move container to workspace number 10
+   # Layout
+   bindsym $mod+b splith
+   bindsym $mod+v splitv
+   bindsym $mod+s layout stacking
+   bindsym $mod+w layout tabbed
+   bindsym $mod+e layout toggle split
+   bindsym $mod+f fullscreen
+   bindsym $mod+Shift+space floating toggle
+   bindsym $mod+space focus mode_toggle
+   bindsym $mod+a focus parent
+   # Resize mode
+   mode "resize" {
+       bindsym h resize shrink width 10px
+       bindsym j resize grow height 10px
+       bindsym k resize shrink height 10px
+       bindsym l resize grow width 10px
+       bindsym Left resize shrink width 10px
+       bindsym Down resize grow height 10px
+       bindsym Up resize shrink height 10px
+       bindsym Right resize grow width 10px
+       bindsym Return mode "default"
+       bindsym Escape mode "default"
+   }
+   bindsym $mod+r mode "resize"
+   # Screenshots
+   bindsym Print exec grim ~/Pictures/screenshot_$(date +'%Y%m%d_%H%M%S').png
+   bindsym Shift+Print exec grim -g "$(slurp)" ~/Pictures/screenshot_$(date +'%Y%m%d_%H%M%S').png
+   # Floating modifier
+   floating_modifier $mod normal
+   # Aesthetic
+   default_border pixel 2
+   gaps inner 8
+   gaps outer 4
+   # Colors (Catppuccin theme)
+   set $base #1e1e2e
+   set $surface0 #313244
+   set $surface1 #45475a
+   set $text #cdd6f4
+   set $rosewater #f5e0dc
+   set $blue #89b4fa
+   set $red #f38ba8
+   client.focused $blue $base $text $rosewater $blue
+   client.focused_inactive $surface1 $base $text $rosewater $surface1
+   client.unfocused $surface1 $base $text $rosewater $surface1
+   client.urgent $red $base $red $rosewater $red
+   # Status bar
+   bar {
+       position top
+       status_command while date +'%Y-%m-%d %I:%M:%S %p'; do sleep 1; done
+       colors {
+           statusline $text
+           background $base
+           focused_workspace $blue $blue $base
+           active_workspace $surface1 $surface1 $text
+           inactive_workspace $base $base $text
+       }
+   }
+   # Autostart
+   exec mako
+   ```  
+   Tweak `~/Downloads/china.jpg` → your DL path. Save.  
 
-3. Accept the host key fingerprint when prompted:
-   ```
-   Are you sure you want to continue connecting (yes/no)? yes
-   ```
+   Reload: **Super + Shift + C**.  
 
-4. Enter your password.
+![Sway Config Edit](screenshots/sway-config.png)  
+![Final Wallpaper](screenshots/final-wallpaper.png)
 
-✅ You’re now remotely managing your NixOS VM!
+## ⚡ Power Moves & Keybinds  
+- **Core Binds:** Super+Enter (term), +D (menu), +Shift+V (nvim), +1-8 (workspaces: term/web/code/etc.).  
+- **Resize:** Super+R → H/J/K/L.  
+- **Screenshots:** Print (full), Shift+Print (select).  
+- **VM Boost:** Add `virtualisation.vmware.guest.enable = true;` to config.nix.  
 
-![Step 15](images/step-15.png)
-
----
-
-## 🛠️ Post-Install Tips
-
-- **Check IP anytime**: `ip a` or `hostname -I`
-- **Edit config again**: `sudo nano /etc/nixos/configuration.nix`
-- **Reapply changes**: `sudo nixos-rebuild switch`
-- **View manual**: `nixos-help`
-
----
-
-
----
-
-## 📝 Notes
-
-- This setup is **minimal by design**—no GUI, no bloat.
-- SSH is your primary access method after setup.
-- Always use a **private, secure network** during `nixos-rebuild`.
-
----
-
-> 🛠️ **Prepared by**: Erick  
-> 📅 Date: October 2025  
-> 💡 Tip: Commit your `configuration.nix` to version control!
-
----
+| Workspace | Vibe          |  
+|-----------|---------------|  
+| 1         | Term          |  
+| 2         | Web           |  
+| 3         | Code          |  
+| 4         | Files         |  
+| 5         | DB            |  
+| 6         | Media         |  
+| 7         | Net/Sec       |  
+| 8         | Misc          |  
 
