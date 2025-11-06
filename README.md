@@ -1,6 +1,6 @@
 # 🚀 NixOS Beast Mode: Minimal Sway Setup in VMware (2025 Edition)
 
-[![NixOS Flake](https://nixos.org/logo/nixos-logo.png)](https://nixos.org)  
+[![NixOS Flake](captures/c0.png)  
 **Declarative tiling paradise—because who needs a DE when Sway + NixOS delivers pure, reproducible power?**  
 
 Fresh off a November 2025 install sesh: This guide cranks up **NixOS 25.05** in **VMware** with a **minimal base** (no bloaty GNOME/Plasma), then unleashes **Sway** for i3-style tiling on Wayland. Battle-tested on VMware Workstation 17+—think 4GB RAM, 2 cores, 50GB disk, 3D accel ON for silky graphics.  
@@ -18,7 +18,7 @@ Total time: ~20-40 mins (install + rebuilds). SSH from your host for remote conf
 ## 📦 Step 1: Boot & Installer Grind  
 1. **VM Power-On:** ISO mounted? Boot hits the menu in ~3s. Mash **Tab** for kernel tweaks if you're fancy.  
 
-   ![NixOS Boot Menu](screenshots/boot-menu.png)  
+   ![NixOS Boot Menu](captures/c1.png)  
    *Pick "NixOS Installer (Minimal)"—keeps it lean for Sway later.*
 
 2. **Calamares Magic:** Graphical installer launches. English everywhere.  
@@ -27,21 +27,21 @@ Total time: ~20-40 mins (install + rebuilds). SSH from your host for remote conf
 - Lang: **American English**.  
 - **Next** →  
 
-![Welcome Screen](screenshots/welcome.png)
+![Welcome Screen](captures/c2.png)
 
 ### 1.2 Location  
 - Region: **America** | Zone: **Panama**.  
 - Sys Lang: **English (UK)** | Numbers/Dates: British English (Panama).  
 - **Next** →  
 
-![Location Setup](screenshots/location.png)
+![Location Setup](captures/c3.png)
 
 ### 1.3 Keyboard  
 - Layout: **English (UK)**.  
 - Test: "The quick brown fox..."—nail those £ keys.  
 - **Next** →  
 
-![Keyboard Setup](screenshots/keyboard.png)
+![Keyboard Setup](captures/c4.png)
 
 ### 1.4 Users  
 - Username: `[your-username]`.  
@@ -49,19 +49,19 @@ Total time: ~20-40 mins (install + rebuilds). SSH from your host for remote conf
 - Admin PW: Same or separate.  
 - **Next** →  
 
-![Users Setup](screenshots/users.png)
+![Users Setup](captures/c5.png)
 
 ### 1.5 Desktop  
 - **No desktop**—minimal AF, Sway incoming.  
 - **Next** →  
 
-![Desktop: No Desktop](screenshots/desktop-none.png)
+![Desktop: No Desktop](captures/c6.png)
 
 ### 1.6 Unfree  
 - Check **Allow unfree software** (VMware tools, anyone?).  
 - EULA nod → **Next**.  
 
-![Unfree Software](screenshots/unfree.png)
+![Unfree Software](captures/c7.png)
 
 ### 1.7 Partitions  
 - **Erase disk** (VMs are throwaways).  
@@ -69,13 +69,13 @@ Total time: ~20-40 mins (install + rebuilds). SSH from your host for remote conf
 - Bootloader: **MBR**.  
 - **Next** > **Install** (~5-10 mins).  
 
-![Partitions Erase](screenshots/partitions.png)
+![Partitions Erase](captures/c8.png)
 
 ### 1.8 Summary & Go  
 - Scan: UK locale, GB keys, [your-username], no DE, unfree OK, erase/install.  
 - **Install** → Reboot (eject ISO).  
 
-![Summary](screenshots/summary.png)
+![Summary](captures/c9.png)
 
 ## 🔧 Step 2: Post-Boot—SSH Unlock & Rebuild  
 TTY1 login: `[your-username]` + PW.  
@@ -96,8 +96,8 @@ TTY1 login: `[your-username]` + PW.
    ```  
    *Brew coffee—downloads/compiles galore.*  
 
-![TTY Edit](screenshots/tty-edit.png)  
-![Rebuild](screenshots/rebuild.png)
+![TTY Edit](captures/c10.png)  
+![Rebuild](captures/c11.png)
 
 3. **Reboot & IP Hunt:**  
    ```bash
@@ -105,7 +105,7 @@ TTY1 login: `[your-username]` + PW.
    ip addr show     # Snag 192.168.x.x (enp0s3)
    ```  
 
-![Login Prompt](screenshots/login.png)
+![Login Prompt](captures/c12.png)
 
 ## 🌐 Step 3: Host SSH Assault  
 PowerShell/Terminal:  
@@ -114,7 +114,7 @@ ssh [your-username]@192.168.x.x
 ```  
 - `yes` to fingerprint. PW in. Remote reign begins.  
 
-![SSH Connect](screenshots/ssh-connect.png)
+![SSH Connect](captures/c13.png)
 
 ## 🪟 Step 4: Sway Summon—Full Config Drop  
 SSH'd in:  
@@ -210,7 +210,7 @@ Nuke & paste this beast (imports `hardware-configuration.nix`—gen it with `sud
     nodePackages.yarn
     mongodb
     sqlite
-    dbeaver-bin # Reemplazo de PostgreSQL
+    dbeaver-bin
     # Python & Data Science
     python3
     python3Packages.pip
@@ -255,18 +255,16 @@ sudo nixos-rebuild switch  # Patience, grasshopper
 sudo reboot now
 ```  
 
-![Config Paste](screenshots/config-paste.png)
+![Config Paste](captures/c14.png)
 
 ## 🎨 Step 5: Sway Launch & Wallpaper Ritual  
 GDM greets: Pick **Sway** session > `[your-username]` + PW. Tiling glory.  
 
-![Sway Login](screenshots/sway-login.png)
+![Sway Login](captures/c15.png)
 
 1. **Wallpaper Quest:**  
    Super (Win) + Enter → `firefox`.  
    Hunt "beautiful Chinese art wallpaper" → DL to `~/Downloads/china.jpg` (or your fave).  
-
-   ![Firefox Search](screenshots/firefox-search.png)
 
 2. **Sway Config Flex:**  
    ```bash
@@ -407,9 +405,6 @@ GDM greets: Pick **Sway** session > `[your-username]` + PW. Tiling glory.
 
    Reload: **Super + Shift + C**.  
 
-![Sway Config Edit](screenshots/sway-config.png)  
-![Final Wallpaper](screenshots/final-wallpaper.png)
-
 ## ⚡ Power Moves & Keybinds  
 - **Core Binds:** Super+Enter (term), +D (menu), +Shift+V (nvim), +1-8 (workspaces: term/web/code/etc.).  
 - **Resize:** Super+R → H/J/K/L.  
@@ -427,3 +422,54 @@ GDM greets: Pick **Sway** session > `[your-username]` + PW. Tiling glory.
 | 7         | Net/Sec       |  
 | 8         | Misc          |  
 
+## 📂 Estructura del Repositorio
+
+```
+.
+├── captures/
+│   ├── c1.png      # Boot menu
+│   ├── c2.png      # Welcome screen
+│   ├── c3.png      # Location setup
+│   ├── c4.png      # Keyboard layout
+│   ├── c5.png      # User configuration
+│   ├── c6.png      # Desktop selection
+│   ├── c7.png      # Unfree software
+│   ├── c8.png      # Partitions
+│   ├── c9.png      # Summary
+│   ├── c10.png     # TTY edit
+│   ├── c11.png     # Rebuild process
+│   ├── c12.png     # Login prompt
+│   ├── c13.png     # SSH connection
+│   ├── c14.png     # Config paste
+│   └── c15.png     # Sway session
+├── configuration.nix
+└── README.md
+```
+
+## 🐛 Troubleshooting
+
+### Rebuild muy lento
+- Usa conexión ethernet en lugar de WiFi
+- Evita WiFi público
+- El proceso puede tardar 5-30 minutos dependiendo de tu conexión
+
+### Sway no inicia
+- Verifica que tu usuario esté en los grupos correctos
+- Revisa logs: `journalctl -xe`
+- Asegúrate de haber seleccionado "Sway" en GDM
+
+### SSH no funciona
+- Verifica que `services.openssh.enable = true;` esté en configuration.nix
+- Confirma que hiciste `sudo nixos-rebuild switch`
+- Verifica la IP con `ip addr show`
+
+## 🔗 Recursos
+
+- [NixOS Manual](https://nixos.org/manual/nixos/stable/)
+- [Sway Wiki](https://github.com/swaywm/sway/wiki)
+- [NixOS Wiki - Sway](https://nixos.wiki/wiki/Sway)
+- [VMware Guest Tools](https://nixos.wiki/wiki/VMware)
+
+---
+
+**Made with ☕ and declarative configs** | NixOS 25.05 | Sway on Wayland
