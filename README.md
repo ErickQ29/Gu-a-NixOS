@@ -422,31 +422,6 @@ GDM greets: Pick **Sway** session > `[your-username]` + PW. Tiling glory.
 | 7         | Net/Sec       |  
 | 8         | Misc          |  
 
-## 📂 Estructura del Repositorio
-
-```
-.
-├── captures/
-│   ├── c1.png      # Boot menu
-│   ├── c2.png      # Welcome screen
-│   ├── c3.png      # Location setup
-│   ├── c4.png      # Keyboard layout
-│   ├── c5.png      # User configuration
-│   ├── c6.png      # Desktop selection
-│   ├── c7.png      # Unfree software
-│   ├── c8.png      # Partitions
-│   ├── c9.png      # Summary
-│   ├── c10.png     # TTY edit
-│   ├── c11.png     # Rebuild process
-│   ├── c12.png     # Login prompt
-│   ├── c13.png     # SSH connection
-│   ├── c14.png     # Config paste
-│   └── c15.png     # Sway session
-├── configuration.nix
-└── README.md
-```
-
-## 🐛 Troubleshooting
 
 ### Rebuild muy lento
 - Usa conexión ethernet en lugar de WiFi
@@ -454,7 +429,7 @@ GDM greets: Pick **Sway** session > `[your-username]` + PW. Tiling glory.
 - El proceso puede tardar 5-30 minutos dependiendo de tu conexión
 
 ### Sway no inicia
-- Verifica que tu usuario esté en los grupos correctos
+- Verifica que vmware tenga el 3d enable
 - Revisa logs: `journalctl -xe`
 - Asegúrate de haber seleccionado "Sway" en GDM
 
