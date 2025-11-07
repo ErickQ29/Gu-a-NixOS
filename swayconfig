@@ -1,0 +1,127 @@
+# Sway configuration - Clean and functional
+   set $mod Mod4
+   set $term foot
+   set $menu wofi --show drun --allow-images --insensitive
+   set $browser firefox
+   set $fm xfce.thunar
+   # Background
+   output * bg ~/Downloads/china.jpg fill
+   ### Key bindings ###
+   # Apps
+   bindsym $mod+Return exec $term
+   bindsym $mod+d exec $menu
+   bindsym $mod+Shift+f exec $browser
+   bindsym $mod+Shift+n exec $fm
+   # Dev quick launch
+   bindsym $mod+Shift+v exec neovim
+   # Exit / reload
+   bindsym $mod+Shift+q kill
+   bindsym $mod+Shift+c reload
+   bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit'
+   # Move focus
+   bindsym $mod+h focus left
+   bindsym $mod+j focus down
+   bindsym $mod+k focus up
+   bindsym $mod+l focus right
+   bindsym $mod+Left focus left
+   bindsym $mod+Down focus down
+   bindsym $mod+Up focus up
+   bindsym $mod+Right focus right
+   # Move windows
+   bindsym $mod+Shift+h move left
+   bindsym $mod+Shift+j move down
+   bindsym $mod+Shift+k move up
+   bindsym $mod+Shift+l move right
+   bindsym $mod+Shift+Left move left
+   bindsym $mod+Shift+Down move down
+   bindsym $mod+Shift+Up move up
+   bindsym $mod+Shift+Right move right
+   # Workspaces
+   set $ws1 "1:term"
+   set $ws2 "2:web"
+   set $ws3 "3:code"
+   set $ws4 "4:files"
+   set $ws5 "5:db"
+   set $ws6 "6:media"
+   set $ws7 "7:net"
+   set $ws8 "8:other"
+   bindsym $mod+1 workspace $ws1
+   bindsym $mod+2 workspace $ws2
+   bindsym $mod+3 workspace $ws3
+   bindsym $mod+4 workspace $ws4
+   bindsym $mod+5 workspace $ws5
+   bindsym $mod+6 workspace $ws6
+   bindsym $mod+7 workspace $ws7
+   bindsym $mod+8 workspace $ws8
+   bindsym $mod+9 workspace number 9
+   bindsym $mod+0 workspace number 10
+   # Move containers to workspaces
+   bindsym $mod+Shift+1 move container to workspace $ws1
+   bindsym $mod+Shift+2 move container to workspace $ws2
+   bindsym $mod+Shift+3 move container to workspace $ws3
+   bindsym $mod+Shift+4 move container to workspace $ws4
+   bindsym $mod+Shift+5 move container to workspace $ws5
+   bindsym $mod+Shift+6 move container to workspace $ws6
+   bindsym $mod+Shift+7 move container to workspace $ws7
+   bindsym $mod+Shift+8 move container to workspace $ws8
+   bindsym $mod+Shift+9 move container to workspace number 9
+   bindsym $mod+Shift+0 move container to workspace number 10
+   # Layout
+   bindsym $mod+b splith
+   bindsym $mod+v splitv
+   bindsym $mod+s layout stacking
+   bindsym $mod+w layout tabbed
+   bindsym $mod+e layout toggle split
+   bindsym $mod+f fullscreen
+   bindsym $mod+Shift+space floating toggle
+   bindsym $mod+space focus mode_toggle
+   bindsym $mod+a focus parent
+   # Resize mode
+   mode "resize" {
+       bindsym h resize shrink width 10px
+       bindsym j resize grow height 10px
+       bindsym k resize shrink height 10px
+       bindsym l resize grow width 10px
+       bindsym Left resize shrink width 10px
+       bindsym Down resize grow height 10px
+       bindsym Up resize shrink height 10px
+       bindsym Right resize grow width 10px
+       bindsym Return mode "default"
+       bindsym Escape mode "default"
+   }
+   bindsym $mod+r mode "resize"
+   # Screenshots
+   bindsym Print exec grim ~/Pictures/screenshot_$(date +'%Y%m%d_%H%M%S').png
+   bindsym Shift+Print exec grim -g "$(slurp)" ~/Pictures/screenshot_$(date +'%Y%m%d_%H%M%S').png
+   # Floating modifier
+   floating_modifier $mod normal
+   # Aesthetic
+   default_border pixel 2
+   gaps inner 8
+   gaps outer 4
+   # Colors (Catppuccin theme)
+   set $base #1e1e2e
+   set $surface0 #313244
+   set $surface1 #45475a
+   set $text #cdd6f4
+   set $rosewater #f5e0dc
+   set $blue #89b4fa
+   set $red #f38ba8
+   client.focused $blue $base $text $rosewater $blue
+   client.focused_inactive $surface1 $base $text $rosewater $surface1
+   client.unfocused $surface1 $base $text $rosewater $surface1
+   client.urgent $red $base $red $rosewater $red
+   # Status bar
+   bar {
+       position top
+       status_command while date +'%Y-%m-%d %I:%M:%S %p'; do sleep 1; done
+       colors {
+           statusline $text
+           background $base
+           focused_workspace $blue $blue $base
+           active_workspace $surface1 $surface1 $text
+           inactive_workspace $base $base $text
+       }
+   }
+   # Autostart
+   exec mako
