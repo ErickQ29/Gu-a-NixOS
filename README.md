@@ -1,6 +1,6 @@
 # 🚀 NixOS Beast Mode: Minimal Sway Setup in VMware (2025 Edition)
 
-[![NixOS Flake](captures/c0.png)  
+![NixOS Flake](captures/c0.png)  
 **Declarative tiling paradise—because who needs a DE when Sway + NixOS delivers pure, reproducible power?**  
 
 Fresh off a November 2025 install sesh: This guide cranks up **NixOS 25.05** in **VMware** with a **minimal base** (no bloaty GNOME/Plasma), then unleashes **Sway** for i3-style tiling on Wayland. Battle-tested on VMware Workstation 17+—think 4GB RAM, 2 cores, 50GB disk, 3D accel ON for silky graphics.  
