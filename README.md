@@ -1,4 +1,4 @@
-# 🚀 NixOS Beast Mode: Minimal Sway Setup in VMware (2025 Edition)
+# 🚀 NixOS Beast Mode: Minimal Sway Setup in VMware (2026 Edition)
 
 ![NixOS Flake](captures/c0.png)  
 **Declarative tiling paradise—because who needs a DE when Sway + NixOS delivers pure, reproducible power?**  
